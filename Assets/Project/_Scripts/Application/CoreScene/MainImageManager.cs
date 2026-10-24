@@ -10,11 +10,15 @@ public class MainImageManager : MonoBehaviour
     public ColorJar ColorJarPrefab;
     public Transform ColorJarParent;
 
+    private List<ColorJar> colorBars;
+
     public void Initialize()
     {
         mainImageSprite = mainImage.sprite;
         mainImage.sprite = DeskRenderer.GetLevelRender(mainImage.sprite.texture);
+        GenerateColorSequence();
     }
+    
     private void GenerateColorSequence()
     {
         ColorJarParent.ClearAll(instant: true);
@@ -27,7 +31,7 @@ public class MainImageManager : MonoBehaviour
             (int)rect.width, (int)rect.height
         );
 
-        List<ColorJar> colorBars = new List<ColorJar>();
+        colorBars = new List<ColorJar>();
         
         Dictionary<Color, int> counts = pixels
             .GroupBy(c => c)

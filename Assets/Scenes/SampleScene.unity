@@ -3215,6 +3215,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   mainImage: {fileID: 2079583151}
   mainImageSprite: {fileID: 0}
+  ColorJarPrefab: {fileID: 3486295352972817346, guid: 80553f5976e480d49906ffdd19a37f01, type: 3}
+  ColorJarParent: {fileID: 939414417}
 --- !u!1001 &1490494825
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3325,7 +3327,7 @@ GameObject:
   - component: {fileID: 1514909030}
   - component: {fileID: 1514909029}
   m_Layer: 5
-  m_Name: Scroll View
+  m_Name: ColorJarsPool
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4119,7 +4121,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: c15010fa02361b54ebd70e807b0e6e76, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4142,7 +4144,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 81adec5727c09654f97746f8c02425fc, type: 3}
+  m_Sprite: {fileID: 21300000, guid: aaddc30d12fcf904eac587ee1feabbee, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
