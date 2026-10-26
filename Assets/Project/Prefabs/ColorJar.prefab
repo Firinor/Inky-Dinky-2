@@ -38,7 +38,7 @@ RectTransform:
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0, y: 1}
 --- !u!114 &3486295352972817346
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -53,6 +53,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   Button: {fileID: 2832905348285702114}
   ColorImage: {fileID: 797448705347272357}
+  Count: 0
   TextCount: {fileID: 6417095177971318787}
   SliderImage: {fileID: 3022655226392913559}
 --- !u!222 &7819172217602113853

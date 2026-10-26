@@ -88,7 +88,7 @@ public class MainImageColors : MonoBehaviour
 
         while (elapsed < blinkDuration)
         {
-            Color[] pixels = tex.GetPixels();
+            Color32[] pixels = tex.GetPixels32();
             for (int i = 0; i < indices.Count; i++)
             {
                 int idx = indices[i];
@@ -99,7 +99,7 @@ public class MainImageColors : MonoBehaviour
                     _ => color
                 };
             }
-            tex.SetPixels(pixels);
+            tex.SetPixels32(pixels);
             tex.Apply();
 
             ColorIndex++;

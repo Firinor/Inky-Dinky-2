@@ -4,18 +4,23 @@ using UnityEngine;
 
 public class MainImageManager : MonoBehaviour
 {
+    public PlayerHand PlayerHand;
+    
     public SpriteRenderer mainImage;
 
     public Sprite mainImageSprite;
     public ColorJar ColorJarPrefab;
     public Transform ColorJarParent;
 
+    private Sprite _inGameplaySprite;
+    
     private List<ColorJar> colorBars;
 
     public void Initialize()
     {
         mainImageSprite = mainImage.sprite;
-        mainImage.sprite = DeskRenderer.GetLevelRender(mainImage.sprite.texture);
+        _inGameplaySprite = DeskRenderer.GetLevelRender(mainImage.sprite.texture);
+        mainImage.sprite = _inGameplaySprite;
         GenerateColorSequence();
     }
     
@@ -42,13 +47,14 @@ public class MainImageManager : MonoBehaviour
             if(i.Key.a < 1)
                 continue;
             
-            ColorJar newColorBar = Instantiate(ColorJarPrefab, ColorJarParent);
-            newColorBar.ColorImage.color = i.Key;
-            newColorBar.SliderImage.color = i.Key;
-            newColorBar.TextCount.text = i.Value.ToString();
-            newColorBar.Count = i.Value;
+            ColorJar newColorJar = Instantiate(ColorJarPrefab, ColorJarParent);
+            newColorJar.ColorImage.color = i.Key;
+            newColorJar.SliderImage.color = i.Key;
+            newColorJar.TextCount.text = i.Value.ToString();
+            newColorJar.Count = i.Value;
+            newColorJar.Button.onClick.AddListener(() => PlayerHand.TryAddColorToBrush(newColorJar));
             //newColorBar.Instantiate();
-            colorBars.Add(newColorBar);
+            colorBars.Add(newColorJar);
         }
         
         //colorBars.Shuffle();
