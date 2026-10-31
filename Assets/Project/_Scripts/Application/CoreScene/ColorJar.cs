@@ -9,4 +9,9 @@ public class ColorJar : MonoBehaviour
     public int Count;
     public TextMeshProUGUI TextCount;
     public Image SliderImage;
+
+    public void Initialize()
+    {
+        
+    }
 }

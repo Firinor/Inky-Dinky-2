@@ -929,6 +929,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   ImageManager: {fileID: 1465287098}
+  mainPixels: []
   BrushColorPoints:
   - {fileID: 799537604}
   - {fileID: 388632399}
@@ -936,7 +937,7 @@ MonoBehaviour:
   - {fileID: 661213794}
   - {fileID: 2088274346}
   PlayerInput: {fileID: 7491249304532976545}
-  MainImageMaterial: {fileID: 0}
+  MainImageMaterial: {fileID: 2100000, guid: c15010fa02361b54ebd70e807b0e6e76, type: 2}
 --- !u!224 &470566209 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2120669200135420073, guid: 80553f5976e480d49906ffdd19a37f01, type: 3}
@@ -2372,7 +2373,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 925167695}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cf5b9430c80e105498396fdc339e615c, type: 3}
   m_Name: 
@@ -2382,6 +2383,7 @@ MonoBehaviour:
   spells: {fileID: 0}
   cameraMover: {fileID: 9051236210518287507}
   mainImage: {fileID: 1465287098}
+  playerHand: {fileID: 430180722}
 --- !u!1 &939414416
 GameObject:
   m_ObjectHideFlags: 0
@@ -2435,7 +2437,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -960, y: 0}
+  m_AnchoredPosition: {x: -540.00006, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &939414418
@@ -3414,6 +3416,11 @@ MonoBehaviour:
   mainImageSprite: {fileID: 0}
   ColorJarPrefab: {fileID: 3486295352972817346, guid: 80553f5976e480d49906ffdd19a37f01, type: 3}
   ColorJarParent: {fileID: 939414417}
+  ImageWidth: 0
+  ImageHeight: 0
+  MainImageMaterial: {fileID: 2100000, guid: c15010fa02361b54ebd70e807b0e6e76, type: 2}
+  colorBars: []
+  mainPixels: []
 --- !u!1001 &1490494825
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3852,7 +3859,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 0
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}

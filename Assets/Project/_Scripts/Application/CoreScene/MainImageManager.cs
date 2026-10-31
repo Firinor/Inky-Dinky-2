@@ -13,15 +13,56 @@ public class MainImageManager : MonoBehaviour
     public Transform ColorJarParent;
 
     private Sprite _inGameplaySprite;
+    public int ImageLength => mainPixels.Length;
+    public int ImageWidth;
+    public int ImageHeight;
     
-    private List<ColorJar> colorBars;
+    public Material MainImageMaterial;
+    
+    public List<ColorJar> colorBars;
+
+    public Color32[] mainPixels;
 
     public void Initialize()
     {
         mainImageSprite = mainImage.sprite;
-        _inGameplaySprite = DeskRenderer.GetLevelRender(mainImage.sprite.texture);
+        _inGameplaySprite = GetLevelRender(mainImage.sprite.texture);
         mainImage.sprite = _inGameplaySprite;
         GenerateColorSequence();
+    }
+    
+    private Sprite GetLevelRender(Texture2D source)
+    {
+        ImageWidth = source.width;
+        ImageHeight = source.height;
+        var result = new Texture2D(ImageWidth, ImageHeight, TextureFormat.RGBA32, false){
+            filterMode = FilterMode.Point
+        };
+        mainPixels = source.GetPixels32();
+        result.SetPixels32(mainPixels);
+        result.Apply();
+        
+        var playerProgressPixels = new Color32[mainPixels.Length];
+        for (int i = 0; i < playerProgressPixels.Length; i++)
+        {
+            Color c = mainPixels[i];
+            
+            float gray = c.r * 0.2126f + c.g * 0.7152f + c.b * 0.0722f;
+            float contrast = .2f;
+            gray = (gray - 0.5f) * contrast + 0.5f;
+            
+            playerProgressPixels[i] = new Color(gray, gray, gray, c.a);
+        }
+
+        result.SetPixels32(playerProgressPixels);
+        result.Apply();
+
+        int pixelsPerUnit = 100;
+        return Sprite.Create(
+            result,
+            new Rect(0, 0, source.width, source.height),
+            new Vector2(0.5f, 0.5f),
+            pixelsPerUnit);
     }
     
     private void GenerateColorSequence()
@@ -53,10 +94,30 @@ public class MainImageManager : MonoBehaviour
             newColorJar.TextCount.text = i.Value.ToString();
             newColorJar.Count = i.Value;
             newColorJar.Button.onClick.AddListener(() => PlayerHand.TryAddColorToBrush(newColorJar));
-            //newColorBar.Instantiate();
+            newColorJar.Initialize();
             colorBars.Add(newColorJar);
         }
         
         //colorBars.Shuffle();
     }
+
+    public void AddFocusColor(Color colorImageColor)
+    {
+        
+    }
+
+    public void RemoveFocusColor(Color colorImageColor)
+    {
+        
+    }
+}
+
+
+public class Pixel
+{
+    public Color32 ID;
+    public Color32 GrayState;
+    public int x;
+    public int y;
+    
 }

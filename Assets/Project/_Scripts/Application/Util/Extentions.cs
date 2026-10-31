@@ -53,4 +53,9 @@ public static class Extentions
         i = j = -1;
         return false;
     }
+    
+    public static bool IsEqualTo(this Color32 a, Color32 b)
+    {
+        return a.r == b.r && a.g == b.g && a.b == b.b && a.a == b.a;
+    }
 }
