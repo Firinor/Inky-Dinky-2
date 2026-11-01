@@ -8,7 +8,8 @@ public class MainImageManager : MonoBehaviour
     
     public SpriteRenderer mainImage;
 
-    public Sprite mainImageSprite;
+    public Texture2D InGameTexture2D;
+    public Sprite MainImageSprite;
     public ColorJar ColorJarPrefab;
     public Transform ColorJarParent;
 
@@ -25,7 +26,7 @@ public class MainImageManager : MonoBehaviour
 
     public void Initialize()
     {
-        mainImageSprite = mainImage.sprite;
+        MainImageSprite = mainImage.sprite;
         _inGameplaySprite = GetLevelRender(mainImage.sprite.texture);
         mainImage.sprite = _inGameplaySprite;
         GenerateColorSequence();
@@ -35,12 +36,11 @@ public class MainImageManager : MonoBehaviour
     {
         ImageWidth = source.width;
         ImageHeight = source.height;
-        var result = new Texture2D(ImageWidth, ImageHeight, TextureFormat.RGBA32, false){
+        InGameTexture2D = new Texture2D(ImageWidth, ImageHeight, TextureFormat.RGBA32, false)
+        {
             filterMode = FilterMode.Point
         };
         mainPixels = source.GetPixels32();
-        result.SetPixels32(mainPixels);
-        result.Apply();
         
         var playerProgressPixels = new Color32[mainPixels.Length];
         for (int i = 0; i < playerProgressPixels.Length; i++)
@@ -54,12 +54,12 @@ public class MainImageManager : MonoBehaviour
             playerProgressPixels[i] = new Color(gray, gray, gray, c.a);
         }
 
-        result.SetPixels32(playerProgressPixels);
-        result.Apply();
+        InGameTexture2D.SetPixels32(playerProgressPixels);
+        InGameTexture2D.Apply();
 
         int pixelsPerUnit = 100;
         return Sprite.Create(
-            result,
+            InGameTexture2D,
             new Rect(0, 0, source.width, source.height),
             new Vector2(0.5f, 0.5f),
             pixelsPerUnit);
@@ -69,8 +69,8 @@ public class MainImageManager : MonoBehaviour
     {
         ColorJarParent.ClearAll(instant: true);
         
-        Texture2D tex = mainImageSprite.texture;
-        Rect rect = mainImageSprite.textureRect;
+        Texture2D tex = MainImageSprite.texture;
+        Rect rect = MainImageSprite.textureRect;
         
         Color[] pixels = tex.GetPixels(
             (int)rect.x, (int)rect.y,
@@ -99,16 +99,6 @@ public class MainImageManager : MonoBehaviour
         }
         
         //colorBars.Shuffle();
-    }
-
-    public void AddFocusColor(Color colorImageColor)
-    {
-        
-    }
-
-    public void RemoveFocusColor(Color colorImageColor)
-    {
-        
     }
 }
 
