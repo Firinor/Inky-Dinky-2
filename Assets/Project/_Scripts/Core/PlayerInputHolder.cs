@@ -2,8 +2,9 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class PlayerInputHolder : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IScrollHandler
+public class PlayerInputHolder : MonoBehaviour, IPointerDownHandler, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IScrollHandler
 {
+    public event Action<Vector2> onStartClick;
     public event Action<Vector2> onClick;
     public event Action<Vector2> onDrag;
     public event Action<float> onZoom;
@@ -76,6 +77,11 @@ public class PlayerInputHolder : MonoBehaviour, IPointerClickHandler, IBeginDrag
         if (isDebug)
             Debug.Log($"eventData: {scrollDelta}, coef: {mouseScrollCoef}");
         onZoom?.Invoke(scrollDelta*mouseScrollCoef);
+    }
+    
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        onStartClick?.Invoke(eventData.position);
     }
     
     public void OnPointerClick(PointerEventData eventData)

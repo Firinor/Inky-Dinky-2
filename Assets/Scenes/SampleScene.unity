@@ -3413,7 +3413,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   PlayerHand: {fileID: 430180722}
   mainImage: {fileID: 2079583151}
-  mainImageSprite: {fileID: 0}
+  InGameTexture2D: {fileID: 0}
+  MainImageSprite: {fileID: 0}
   ColorJarPrefab: {fileID: 3486295352972817346, guid: 80553f5976e480d49906ffdd19a37f01, type: 3}
   ColorJarParent: {fileID: 939414417}
   ImageWidth: 0
@@ -4530,7 +4531,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: aaddc30d12fcf904eac587ee1feabbee, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d1c7813a7e180d64284a61b93f09c777, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

@@ -1,8 +1,9 @@
-using Unity.Mathematics;
 using UnityEngine;
 
 public class CameraMover : MonoBehaviour
 {
+    [SerializeField] private PlayerHand playerHand;
+    
     [SerializeField] private Camera mainCamera;
     [SerializeField] private float maxZoom;
     [SerializeField] private float minZoom;
@@ -32,6 +33,9 @@ public class CameraMover : MonoBehaviour
 
     private void OnDrag(Vector2 delta)
     {
+        if(playerHand.IsPainting)
+            return;
+        
         Vector3 camPosition = mainCamera.transform.position;
         Vector3 fromDeltaPosition = mainCamera.ScreenToWorldPoint(Vector3.zero);
         Vector3 toDeltaPosition = mainCamera.ScreenToWorldPoint(delta);

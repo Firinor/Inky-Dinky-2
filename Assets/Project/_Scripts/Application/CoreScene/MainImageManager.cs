@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MainImageManager : MonoBehaviour
 {
+    private static readonly int ShaderSizeID = Shader.PropertyToID("_Size");
     public PlayerHand PlayerHand;
     
     public SpriteRenderer mainImage;
@@ -56,7 +57,8 @@ public class MainImageManager : MonoBehaviour
 
         InGameTexture2D.SetPixels32(playerProgressPixels);
         InGameTexture2D.Apply();
-
+        MainImageMaterial.SetVector(ShaderSizeID, new Vector2(ImageWidth, ImageHeight));
+        
         int pixelsPerUnit = 100;
         return Sprite.Create(
             InGameTexture2D,
