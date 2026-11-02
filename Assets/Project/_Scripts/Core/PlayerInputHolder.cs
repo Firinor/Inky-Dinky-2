@@ -2,9 +2,10 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class PlayerInputHolder : MonoBehaviour, IPointerDownHandler, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IScrollHandler
+public class PlayerInputHolder : MonoBehaviour, IPointerDownHandler, IPointerClickHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IScrollHandler
 {
     public event Action<Vector2> onStartClick;
+    public event Action onEndClick;
     public event Action<Vector2> onClick;
     public event Action<Vector2> onDrag;
     public event Action<float> onZoom;
@@ -82,6 +83,12 @@ public class PlayerInputHolder : MonoBehaviour, IPointerDownHandler, IPointerCli
     public void OnPointerDown(PointerEventData eventData)
     {
         onStartClick?.Invoke(eventData.position);
+    }
+    
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        Debug.Log("Up");
+        onEndClick?.Invoke();
     }
     
     public void OnPointerClick(PointerEventData eventData)

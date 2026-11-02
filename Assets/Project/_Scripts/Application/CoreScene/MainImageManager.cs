@@ -81,8 +81,8 @@ public class MainImageManager : MonoBehaviour
 
         colorBars = new List<ColorJar>();
         
-        Dictionary<Color, int> counts = pixels
-            .GroupBy(c => c)
+        Dictionary<Color32, int> counts = pixels
+            .GroupBy(c => (Color32)c)
             .ToDictionary(g => g.Key, g => g.Count());
             
         foreach (var i in counts)

@@ -22,9 +22,10 @@ public class PlayerHand : MonoBehaviour
     
     private static readonly int HighlightID = Shader.PropertyToID("Highlight");
     private static readonly int MainTex = Shader.PropertyToID("_MainTex");
-    private InputActionAsset action;
     private Vector2Int lastMousePosition;
 
+    private List<ColorJar> brush = new(5);
+    
     public void Initialize()
     {
         MainSprite = ImageManager.MainImageSprite;
@@ -36,8 +37,10 @@ public class PlayerHand : MonoBehaviour
         MainImageMaterial.SetTexture(HighlightID, _inGameplayHighlight);
         
         PlayerInput.onStartClick += FindPixels;
+        PlayerInput.onEndClick += ResetPainting;
         PlayerInput.onDrag += FindPixelsLine;
     }
+    private void ResetPainting() => IsPainting = false;
 
     private void CreateHighlight()
     {
@@ -78,6 +81,8 @@ public class PlayerHand : MonoBehaviour
         _inGameplayHighlight.Apply();
         MainImageMaterial.SetTexture(HighlightID, _inGameplayHighlight);
         
+        brush.Add(jar);
+        
         return true;
     }
 
@@ -99,6 +104,7 @@ public class PlayerHand : MonoBehaviour
         _inGameplayHighlight.SetPixels32(HighlightPixels);
         _inGameplayHighlight.Apply();
         MainImageMaterial.SetTexture(HighlightID, _inGameplayHighlight);
+        brush.Remove(jar);
     }
     
     private void FindPixels(Vector2 pos)
@@ -121,15 +127,23 @@ public class PlayerHand : MonoBehaviour
             return;
         
         Vector2Int pixelPos = new Vector2Int((int)localPos.x, (int)localPos.y);
-        Color32 pixelColor = ImageManager.mainPixels[pixelPos.x + pixelPos.y * ImageManager.ImageWidth];
+        int index = GetIndex(pixelPos.x, pixelPos.y);
+        Color32 pixelColor = ImageManager.mainPixels[index];
 
-        if (pixelColor.a > 0)
-        {
-            InGamePixels[pixelPos.x + pixelPos.y * ImageManager.ImageWidth] = pixelColor;
-            InGameTexture2D.SetPixels32(InGamePixels);
-            InGameTexture2D.Apply();
-            lastMousePosition = pixelPos;
-        }
+        if (pixelColor.a <= 0)
+            return;
+        
+        if(brush.Count <= 0 || brush[0] is null)
+            return;
+        
+        if (!mainPixels[index].IsEqualTo(brush[0].ColorImage.color))
+            return;
+        
+        InGamePixels[index] = pixelColor;
+        InGameTexture2D.SetPixels32(InGamePixels);
+        InGameTexture2D.Apply();
+        lastMousePosition = pixelPos;
+        IsPainting = true;
     }
 
     public bool IsPixelPosition(Vector2 pos, out Vector2Int pixelPosition)
@@ -137,11 +151,11 @@ public class PlayerHand : MonoBehaviour
         pixelPosition = new(-1, -1);
         Vector2 worldMousePosition = Camera.main!.ScreenToWorldPoint(pos);
         Vector2 localPos = ImageManager.mainImage.transform.InverseTransformPoint(worldMousePosition);
-        Debug.Log("pixel coord before: " + localPos);
+        //Debug.Log("pixel coord before: " + localPos);
         localPos *= 100; // Texture scale
         localPos += MainSprite.pivot;
 
-        Debug.Log("pixel coord after: " + localPos);
+        //Debug.Log("pixel coord after: " + localPos);
             
         if (localPos.x < 0
             || localPos.y < 0
@@ -155,23 +169,32 @@ public class PlayerHand : MonoBehaviour
     
     private void FindPixelsLine(Vector2 obj)
     {
+        if(brush.Count <= 0 || brush[0] is null)
+            return;
+        
         Vector2 mousePosition = Mouse.current.position.ReadValue();
         
-        Debug.Log("mouse:" + mousePosition);
-        Debug.Log(obj);
+        //Debug.Log("mouse:" + mousePosition);
+        //Debug.Log(obj);
         
         if(!IsPixelPosition(mousePosition, out var endPixel) 
            || !IsPixelPosition(mousePosition - obj, out var startPixel)) 
            return;
 
-        Debug.Log("startPixel" + startPixel);
-        Debug.Log("endPixel" + endPixel);
+        //Debug.Log("startPixel" + startPixel);
+        //Debug.Log("endPixel" + endPixel);
         
         List<Vector2Int> line = Bresenham(startPixel, endPixel);
         foreach (var pixel in line)
         {
-            Debug.Log("result:" + pixel);
+            int index = GetIndex(pixel.x, pixel.y);
+            if (mainPixels[index].IsEqualTo(brush[0].ColorImage.color))
+            {
+                InGamePixels[index] = mainPixels[index];
+            }
         }
+        InGameTexture2D.SetPixels32(InGamePixels);
+        InGameTexture2D.Apply();
     }
     
     private List<Vector2Int> Bresenham(Vector2 startPoint, Vector2 endPoint)
@@ -233,9 +256,16 @@ public class PlayerHand : MonoBehaviour
 
         return pixels;
     }
+
+    public int GetIndex(int x, int y)
+    {
+        return x + y * ImageManager.ImageWidth;
+    }
     
     private void OnDestroy()
     {
-        PlayerInput.onClick -= FindPixels;
+        PlayerInput.onStartClick -= FindPixels;
+        PlayerInput.onEndClick -= ResetPainting;
+        PlayerInput.onDrag -= FindPixelsLine;
     }
 }

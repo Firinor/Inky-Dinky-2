@@ -938,6 +938,7 @@ MonoBehaviour:
   - {fileID: 2088274346}
   PlayerInput: {fileID: 7491249304532976545}
   MainImageMaterial: {fileID: 2100000, guid: c15010fa02361b54ebd70e807b0e6e76, type: 2}
+  MainSprite: {fileID: 0}
 --- !u!224 &470566209 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2120669200135420073, guid: 80553f5976e480d49906ffdd19a37f01, type: 3}
@@ -4823,6 +4824,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b2abadb8d5fbb2459e18cc9c101792f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraMover
+  playerHand: {fileID: 430180722}
   mainCamera: {fileID: 519420031}
   maxZoom: 10
   minZoom: 0.04
