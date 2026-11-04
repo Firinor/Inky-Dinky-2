@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -24,7 +25,10 @@ public class PlayerHand : MonoBehaviour
     private static readonly int MainTex = Shader.PropertyToID("_MainTex");
     private Vector2Int lastMousePosition;
 
-    private List<ColorJar> brush = new(5);
+    private readonly List<ColorJar> brush = new(5);
+
+    private bool isDirty;
+    private bool isHighlight;
     
     public void Initialize()
     {
@@ -40,6 +44,24 @@ public class PlayerHand : MonoBehaviour
         PlayerInput.onEndClick += ResetPainting;
         PlayerInput.onDrag += FindPixelsLine;
     }
+
+    private void Update()
+    {
+        if (isDirty)
+        {
+            InGameTexture2D.SetPixels32(InGamePixels);
+            InGameTexture2D.Apply();
+        }
+        if (isHighlight)
+        {
+            _inGameplayHighlight.SetPixels32(HighlightPixels);
+            _inGameplayHighlight.Apply();
+        }
+
+        isHighlight = false;
+        isDirty = false;
+    }
+
     private void ResetPainting() => IsPainting = false;
 
     private void CreateHighlight()
@@ -53,9 +75,7 @@ public class PlayerHand : MonoBehaviour
         {
             HighlightPixels[i] = new Color32();
         }
-
-        _inGameplayHighlight.SetPixels32(HighlightPixels);
-        _inGameplayHighlight.Apply();
+        isHighlight = true;
     }
     
     public bool TryAddColorToBrush(ColorJar jar)
@@ -77,12 +97,9 @@ public class PlayerHand : MonoBehaviour
                 HighlightPixels[i] = new Color32(255, 255, 255, 255);
             }
         }
-        _inGameplayHighlight.SetPixels32(HighlightPixels);
-        _inGameplayHighlight.Apply();
-        MainImageMaterial.SetTexture(HighlightID, _inGameplayHighlight);
-        
         brush.Add(jar);
         
+        isHighlight = true;
         return true;
     }
 
@@ -101,9 +118,7 @@ public class PlayerHand : MonoBehaviour
                 HighlightPixels[i] = new Color32(0, 0, 0, 0);
             }
         }
-        _inGameplayHighlight.SetPixels32(HighlightPixels);
-        _inGameplayHighlight.Apply();
-        MainImageMaterial.SetTexture(HighlightID, _inGameplayHighlight);
+        isHighlight = true;
         brush.Remove(jar);
     }
     
@@ -133,17 +148,30 @@ public class PlayerHand : MonoBehaviour
         if (pixelColor.a <= 0)
             return;
         
-        if(brush.Count <= 0 || brush[0] is null)
-            return;
-        
-        if (!mainPixels[index].IsEqualTo(brush[0].ColorImage.color))
+        if (!IsColorInBrush(mainPixels[index]))
             return;
         
         InGamePixels[index] = pixelColor;
-        InGameTexture2D.SetPixels32(InGamePixels);
-        InGameTexture2D.Apply();
+        HighlightPixels[index] = new Color32();
+        isHighlight = true;
+        isDirty = true;
         lastMousePosition = pixelPos;
         IsPainting = true;
+    }
+
+    private bool IsColorInBrush(Color32 color)
+    {
+        if(brush.Count <= 0)
+            return false;
+
+        foreach (ColorJar colorJar in brush)
+        {
+            Color32 jarColor = colorJar.ColorImage.color;
+            if (jarColor.IsEqualTo(color))
+                return true;
+        }
+
+        return false;
     }
 
     public bool IsPixelPosition(Vector2 pos, out Vector2Int pixelPosition)
@@ -169,7 +197,7 @@ public class PlayerHand : MonoBehaviour
     
     private void FindPixelsLine(Vector2 obj)
     {
-        if(brush.Count <= 0 || brush[0] is null)
+        if(brush.Count <= 0)
             return;
         
         Vector2 mousePosition = Mouse.current.position.ReadValue();
@@ -188,13 +216,14 @@ public class PlayerHand : MonoBehaviour
         foreach (var pixel in line)
         {
             int index = GetIndex(pixel.x, pixel.y);
-            if (mainPixels[index].IsEqualTo(brush[0].ColorImage.color))
-            {
-                InGamePixels[index] = mainPixels[index];
-            }
+            if (!IsColorInBrush(mainPixels[index]))
+                continue;
+            
+            InGamePixels[index] = mainPixels[index];
+            HighlightPixels[index] = new Color32();
+            isHighlight = true;
+            isDirty = true;
         }
-        InGameTexture2D.SetPixels32(InGamePixels);
-        InGameTexture2D.Apply();
     }
     
     private List<Vector2Int> Bresenham(Vector2 startPoint, Vector2 endPoint)
