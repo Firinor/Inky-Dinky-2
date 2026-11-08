@@ -87,7 +87,7 @@ public class PlayerInputHolder : MonoBehaviour, IPointerDownHandler, IPointerCli
     
     public void OnPointerUp(PointerEventData eventData)
     {
-        Debug.Log("Up");
+        //Debug.Log("Up");
         onEndClick?.Invoke();
     }
     

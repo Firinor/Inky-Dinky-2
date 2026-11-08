@@ -95,6 +95,8 @@ public class MainImageManager : MonoBehaviour
             newColorJar.SliderImage.color = i.Key;
             newColorJar.TextCount.text = i.Value.ToString();
             newColorJar.Count = i.Value;
+            newColorJar.StartCount = i.Value;
+            newColorJar.SliderImage.fillAmount = 1;
             newColorJar.Button.onClick.AddListener(() => PlayerHand.TryAddColorToBrush(newColorJar));
             newColorJar.Initialize();
             colorBars.Add(newColorJar);

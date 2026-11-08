@@ -6,6 +6,7 @@ public class ColorJar : MonoBehaviour
 {
     public Button Button;
     public Image ColorImage;
+    public float StartCount;
     public int Count;
     public TextMeshProUGUI TextCount;
     public Image SliderImage;

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -19,6 +18,7 @@ public class PlayerHand : MonoBehaviour
     private Color32[] HighlightPixels;
     private Texture2D InGameTexture2D;
     private Color32[] InGamePixels;
+    private bool[] IsSolvedPixel;
     private Texture2D _inGameplayHighlight;
     
     private static readonly int HighlightID = Shader.PropertyToID("Highlight");
@@ -35,6 +35,7 @@ public class PlayerHand : MonoBehaviour
         MainSprite = ImageManager.MainImageSprite;
         InGameTexture2D = ImageManager.InGameTexture2D;
         InGamePixels = InGameTexture2D.GetPixels32();
+        IsSolvedPixel = new bool[InGamePixels.Length];
         mainPixels = ImageManager.mainPixels;
         
         CreateHighlight();
@@ -92,23 +93,28 @@ public class PlayerHand : MonoBehaviour
         Color32 colorID = jar.ColorImage.color;
         for (int i = 0; i < mainPixels.Length; i++)
         {
-            if (mainPixels[i].IsEqualTo(colorID))
-            {
+            if (mainPixels[i].IsEqualTo(colorID)
+                && !IsSolvedPixel[i])
                 HighlightPixels[i] = new Color32(255, 255, 255, 255);
-            }
         }
         brush.Add(jar);
         
         isHighlight = true;
         return true;
     }
-
     private void RemoveColorFromBrush(ColorJar jar)
     {
-        jar.transform.SetParent(ImageManager.ColorJarParent);
-        jar.transform.SetAsFirstSibling();
         jar.Button.onClick.RemoveAllListeners();
         jar.Button.onClick.AddListener(() => TryAddColorToBrush(jar));
+        if (jar.Count > 0)
+        {
+            jar.transform.SetParent(ImageManager.ColorJarParent);
+            jar.transform.SetAsFirstSibling();
+        }
+        else
+        {
+            Destroy(jar.gameObject);
+        }
         
         Color32 colorID = jar.ColorImage.color;
         for (int i = 0; i < mainPixels.Length; i++)
@@ -147,12 +153,14 @@ public class PlayerHand : MonoBehaviour
 
         if (pixelColor.a <= 0)
             return;
-        
+        if(IsSolvedPixel[index])
+            return;
         if (!IsColorInBrush(mainPixels[index]))
             return;
         
         InGamePixels[index] = pixelColor;
         HighlightPixels[index] = new Color32();
+        IsSolvedPixel[index] = true;
         isHighlight = true;
         isDirty = true;
         lastMousePosition = pixelPos;
@@ -168,7 +176,14 @@ public class PlayerHand : MonoBehaviour
         {
             Color32 jarColor = colorJar.ColorImage.color;
             if (jarColor.IsEqualTo(color))
+            {
+                colorJar.Count--;
+                colorJar.TextCount.text = colorJar.Count.ToString();
+                colorJar.SliderImage.fillAmount = colorJar.Count/colorJar.StartCount;
+                if(colorJar.Count <= 0)
+                    RemoveColorFromBrush(colorJar);
                 return true;
+            }
         }
 
         return false;
@@ -199,6 +214,8 @@ public class PlayerHand : MonoBehaviour
     {
         if(brush.Count <= 0)
             return;
+        if(!IsPainting)
+            return;
         
         Vector2 mousePosition = Mouse.current.position.ReadValue();
         
@@ -216,11 +233,14 @@ public class PlayerHand : MonoBehaviour
         foreach (var pixel in line)
         {
             int index = GetIndex(pixel.x, pixel.y);
+            if(IsSolvedPixel[index])
+                return;
             if (!IsColorInBrush(mainPixels[index]))
                 continue;
             
             InGamePixels[index] = mainPixels[index];
             HighlightPixels[index] = new Color32();
+            IsSolvedPixel[index] = true;
             isHighlight = true;
             isDirty = true;
         }
@@ -286,7 +306,7 @@ public class PlayerHand : MonoBehaviour
         return pixels;
     }
 
-    public int GetIndex(int x, int y)
+    private int GetIndex(int x, int y)
     {
         return x + y * ImageManager.ImageWidth;
     }
