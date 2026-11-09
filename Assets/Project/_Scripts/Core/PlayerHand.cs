@@ -9,20 +9,25 @@ public class PlayerHand : MonoBehaviour
     public Color32[] mainPixels;
     public Transform[] BrushColorPoints;
     public PlayerInputHolder PlayerInput;
-
+    public Camera mainCamera;
     public Material MainImageMaterial;
     public Sprite MainSprite;
 
+    public float BigCellZoom;
+    public float MiniCellZoom;
+    
     public bool IsPainting { get; private set; }
     
     private Color32[] HighlightPixels;
-    private Texture2D InGameTexture2D;
-    private Color32[] InGamePixels;
+    private Color32[] InGameSolvedPixels;
     private bool[] IsSolvedPixel;
     private Texture2D _inGameplayHighlight;
+    private Texture2D InGameSolvedTexture2D;
     
     private static readonly int HighlightID = Shader.PropertyToID("Highlight");
-    private static readonly int MainTex = Shader.PropertyToID("_MainTex");
+    private static readonly int SolvedTexID = Shader.PropertyToID("_solvedPixels");
+    private static readonly int MaxCellID = Shader.PropertyToID("_MaxCell");
+    private static readonly int MinCellID = Shader.PropertyToID("_MinCell");
     private Vector2 lastMousePosition;
 
     private readonly List<ColorJar> brush = new(5);
@@ -33,25 +38,33 @@ public class PlayerHand : MonoBehaviour
     public void Initialize()
     {
         MainSprite = ImageManager.MainImageSprite;
-        InGameTexture2D = ImageManager.InGameTexture2D;
-        InGamePixels = InGameTexture2D.GetPixels32();
-        IsSolvedPixel = new bool[InGamePixels.Length];
-        mainPixels = ImageManager.mainPixels;
         
         CreateHighlight();
+        CreateSolvedTexture();
         MainImageMaterial.SetTexture(HighlightID, _inGameplayHighlight);
+        MainImageMaterial.SetTexture(SolvedTexID, InGameSolvedTexture2D);
+        MainImageMaterial.SetFloat(MaxCellID, mainCamera.orthographicSize > BigCellZoom ? 0 : 1);
+        MainImageMaterial.SetFloat(MinCellID, mainCamera.orthographicSize > MiniCellZoom ? 0 : 1);
         
         PlayerInput.onStartClick += FindPixels;
         PlayerInput.onEndClick += ResetPainting;
         PlayerInput.onDrag += FindPixelsLine;
+        PlayerInput.onZoom += ShowCellOnZoom;
+    }
+
+    private void ShowCellOnZoom(float deltaZoom)
+    {
+        float cameraSize = mainCamera.orthographicSize;
+        MainImageMaterial.SetFloat(MaxCellID, cameraSize > BigCellZoom ? 0 : 1);
+        MainImageMaterial.SetFloat(MinCellID, cameraSize > MiniCellZoom ? 0 : 1);
     }
 
     private void Update()
     {
         if (isDirty)
         {
-            InGameTexture2D.SetPixels32(InGamePixels);
-            InGameTexture2D.Apply();
+            InGameSolvedTexture2D.SetPixels32(InGameSolvedPixels);
+            InGameSolvedTexture2D.Apply();
         }
         if (isHighlight)
         {
@@ -77,6 +90,21 @@ public class PlayerHand : MonoBehaviour
             HighlightPixels[i] = new Color32();
         }
         isHighlight = true;
+    }
+    private void CreateSolvedTexture()
+    {
+        InGameSolvedTexture2D = new Texture2D(ImageManager.ImageWidth, ImageManager.ImageHeight, TextureFormat.RGBA32, false)
+        {
+            filterMode = FilterMode.Point
+        };
+        InGameSolvedPixels = new Color32[ImageManager.ImageLength];
+        for (int i = 0; i < InGameSolvedPixels.Length; i++)
+        {
+            InGameSolvedPixels[i] = new Color32();
+        }
+        IsSolvedPixel = new bool[InGameSolvedPixels.Length];
+        mainPixels = ImageManager.mainPixels;
+        isDirty = true;
     }
     
     public bool TryAddColorToBrush(ColorJar jar)
@@ -150,7 +178,7 @@ public class PlayerHand : MonoBehaviour
         if (!IsColorInBrush(mainPixels[index]))
             return;
         
-        InGamePixels[index] = pixelColor;
+        InGameSolvedPixels[index] = pixelColor;
         HighlightPixels[index] = new Color32();
         IsSolvedPixel[index] = true;
         isHighlight = true;
@@ -224,7 +252,7 @@ public class PlayerHand : MonoBehaviour
             if (!IsColorInBrush(mainPixels[index]))
                 continue;
             
-            InGamePixels[index] = mainPixels[index];
+            InGameSolvedPixels[index] = mainPixels[index];
             HighlightPixels[index] = new Color32();
             IsSolvedPixel[index] = true;
             isHighlight = true;
@@ -302,5 +330,6 @@ public class PlayerHand : MonoBehaviour
         PlayerInput.onStartClick -= FindPixels;
         PlayerInput.onEndClick -= ResetPainting;
         PlayerInput.onDrag -= FindPixelsLine;
+        PlayerInput.onZoom -= ShowCellOnZoom;
     }
 }

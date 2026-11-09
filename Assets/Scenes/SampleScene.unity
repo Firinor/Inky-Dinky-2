@@ -937,8 +937,11 @@ MonoBehaviour:
   - {fileID: 661213794}
   - {fileID: 2088274346}
   PlayerInput: {fileID: 7491249304532976545}
+  mainCamera: {fileID: 519420031}
   MainImageMaterial: {fileID: 2100000, guid: c15010fa02361b54ebd70e807b0e6e76, type: 2}
   MainSprite: {fileID: 0}
+  BigCellZoom: 0.65
+  MiniCellZoom: 0.2
 --- !u!224 &470566209 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2120669200135420073, guid: 80553f5976e480d49906ffdd19a37f01, type: 3}
@@ -4532,7 +4535,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: aaddc30d12fcf904eac587ee1feabbee, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d1c7813a7e180d64284a61b93f09c777, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
