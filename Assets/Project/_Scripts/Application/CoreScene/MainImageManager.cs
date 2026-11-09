@@ -47,6 +47,8 @@ public class MainImageManager : MonoBehaviour
         for (int i = 0; i < playerProgressPixels.Length; i++)
         {
             Color c = mainPixels[i];
+            if(c.a < .5f)
+                continue;
             
             float gray = c.r * 0.2126f + c.g * 0.7152f + c.b * 0.0722f;
             float contrast = .2f;
@@ -82,7 +84,12 @@ public class MainImageManager : MonoBehaviour
         colorBars = new List<ColorJar>();
         
         Dictionary<Color32, int> counts = pixels
-            .GroupBy(c => (Color32)c)
+            .GroupBy(c =>
+            {
+                Color32 c32 = c;
+                c32.a = c.a < .5f ? (byte)0 : (byte)255;
+                return c32;
+            })
             .ToDictionary(g => g.Key, g => g.Count());
             
         foreach (var i in counts)
@@ -104,14 +111,4 @@ public class MainImageManager : MonoBehaviour
         
         //colorBars.Shuffle();
     }
-}
-
-
-public class Pixel
-{
-    public Color32 ID;
-    public Color32 GrayState;
-    public int x;
-    public int y;
-    
 }
