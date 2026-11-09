@@ -23,7 +23,7 @@ public class PlayerHand : MonoBehaviour
     
     private static readonly int HighlightID = Shader.PropertyToID("Highlight");
     private static readonly int MainTex = Shader.PropertyToID("_MainTex");
-    private Vector2Int lastMousePosition;
+    private Vector2 lastMousePosition;
 
     private readonly List<ColorJar> brush = new(5);
 
@@ -131,20 +131,12 @@ public class PlayerHand : MonoBehaviour
     private void FindPixels(Vector2 pos)
     {
         Vector2 mousePosition = Mouse.current.position.ReadValue();
-        Vector2 worldMousePosition = Camera.main!.ScreenToWorldPoint(mousePosition);
-            
-        if(!ImageManager.mainImage.sprite.bounds.Contains(worldMousePosition))
-           return;
-       
-        Sprite sprite = ImageManager.mainImage.sprite;
-        Vector2 localPos = ImageManager.mainImage.transform.InverseTransformPoint(worldMousePosition);
-        localPos *= 100; // Texture scale
-        localPos += sprite.pivot;
-
+        lastMousePosition = mousePosition;
+        Vector2 localPos = GetPixelPosition(mousePosition);
         if (localPos.x < 0
             || localPos.y < 0
-            || localPos.x >= sprite.rect.width
-            || localPos.y >= sprite.rect.height)
+            || localPos.x >= ImageManager.ImageWidth
+            || localPos.y >= ImageManager.ImageHeight)
             return;
         
         Vector2Int pixelPos = new Vector2Int((int)localPos.x, (int)localPos.y);
@@ -163,7 +155,6 @@ public class PlayerHand : MonoBehaviour
         IsSolvedPixel[index] = true;
         isHighlight = true;
         isDirty = true;
-        lastMousePosition = pixelPos;
         IsPainting = true;
     }
 
@@ -189,25 +180,13 @@ public class PlayerHand : MonoBehaviour
         return false;
     }
 
-    public bool IsPixelPosition(Vector2 pos, out Vector2Int pixelPosition)
+    private Vector2Int GetPixelPosition(Vector2 pos)
     {
-        pixelPosition = new(-1, -1);
         Vector2 worldMousePosition = Camera.main!.ScreenToWorldPoint(pos);
         Vector2 localPos = ImageManager.mainImage.transform.InverseTransformPoint(worldMousePosition);
-        //Debug.Log("pixel coord before: " + localPos);
         localPos *= 100; // Texture scale
         localPos += MainSprite.pivot;
-
-        //Debug.Log("pixel coord after: " + localPos);
-            
-        if (localPos.x < 0
-            || localPos.y < 0
-            || localPos.x >= MainSprite.rect.width
-            || localPos.y >= MainSprite.rect.height)
-            return false;
-        
-        pixelPosition = new Vector2Int((int)localPos.x, (int)localPos.y);
-        return true;
+        return new Vector2Int((int)localPos.x, (int)localPos.y);
     }
     
     private void FindPixelsLine(Vector2 obj)
@@ -218,23 +197,30 @@ public class PlayerHand : MonoBehaviour
             return;
         
         Vector2 mousePosition = Mouse.current.position.ReadValue();
+        //Debug.Log("mouse:" + mousePosition + " lastMousePosition" + lastMousePosition);
         
-        //Debug.Log("mouse:" + mousePosition);
-        //Debug.Log(obj);
-        
-        if(!IsPixelPosition(mousePosition, out var endPixel) 
-           || !IsPixelPosition(mousePosition - obj, out var startPixel)) 
-           return;
+        Vector2 endPixel = GetPixelPosition(mousePosition);
+        Vector2 startPixel = GetPixelPosition(lastMousePosition);
 
-        //Debug.Log("startPixel" + startPixel);
-        //Debug.Log("endPixel" + endPixel);
-        
+        lastMousePosition = mousePosition;
+        //Debug.Log("new lastMousePosition " + lastMousePosition);
+        //Debug.Log("Start " +  startPixel + " end " + endPixel);
         List<Vector2Int> line = Bresenham(startPixel, endPixel);
         foreach (var pixel in line)
         {
+            //Debug.Log(pixel);
+            
+            if(pixel.x < 0 
+               || pixel.y < 0 
+               || pixel.x >= ImageManager.ImageWidth 
+               || pixel.y >= ImageManager.ImageHeight)
+                continue;
+            
             int index = GetIndex(pixel.x, pixel.y);
             if(IsSolvedPixel[index])
-                return;
+                continue;
+            if(mainPixels[index].a <= 0)
+                continue;
             if (!IsColorInBrush(mainPixels[index]))
                 continue;
             
