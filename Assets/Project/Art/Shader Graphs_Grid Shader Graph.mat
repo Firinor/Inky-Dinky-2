@@ -78,7 +78,7 @@ Material:
     - _BooleanColo2: 0
     - _BooleanColor1: 0
     - _Grid: 1
-    - _MaxCell: 0
+    - _MaxCell: 1
     - _MinCell: 0
     - _QueueControl: 1
     - _QueueOffset: 0

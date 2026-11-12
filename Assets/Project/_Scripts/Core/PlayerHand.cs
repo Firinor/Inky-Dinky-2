@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 public class PlayerHand : MonoBehaviour
 {
     public MainImageManager ImageManager;
+    public CameraMover CameraMover;
     public Color32[] mainPixels;
     public Transform[] BrushColorPoints;
     public PlayerInputHolder PlayerInput;
@@ -65,15 +66,14 @@ public class PlayerHand : MonoBehaviour
         {
             InGameSolvedTexture2D.SetPixels32(InGameSolvedPixels);
             InGameSolvedTexture2D.Apply();
+            isDirty = false;
         }
         if (isHighlight)
         {
             _inGameplayHighlight.SetPixels32(HighlightPixels);
             _inGameplayHighlight.Apply();
+            isHighlight = false;
         }
-
-        isHighlight = false;
-        isDirty = false;
     }
 
     private void ResetPainting() => IsPainting = false;
@@ -171,7 +171,7 @@ public class PlayerHand : MonoBehaviour
         int index = GetIndex(pixelPos.x, pixelPos.y);
         Color32 pixelColor = ImageManager.mainPixels[index];
 
-        if (pixelColor.a <= 0)
+        if(pixelColor.a <= 0)
             return;
         if(IsSolvedPixel[index])
             return;
@@ -245,9 +245,9 @@ public class PlayerHand : MonoBehaviour
                 continue;
             
             int index = GetIndex(pixel.x, pixel.y);
-            if(IsSolvedPixel[index])
-                continue;
             if(mainPixels[index].a <= 0)
+                continue;
+            if(IsSolvedPixel[index])
                 continue;
             if (!IsColorInBrush(mainPixels[index]))
                 continue;
@@ -258,6 +258,34 @@ public class PlayerHand : MonoBehaviour
             isHighlight = true;
             isDirty = true;
         }
+    }
+
+    public void MoveCameraToOpenPixel()
+    {
+        if(brush.Count <= 0)
+            return;
+
+        int pixelIndex = -1;
+        for (int i = 0; i < HighlightPixels.Length; i++)
+        {
+            if(HighlightPixels[i].r < 255)
+                continue;
+
+            pixelIndex = i;
+            break;
+        }
+
+        Vector2Int pos = GetPixelPositionByIndex(pixelIndex);
+        int pixelsPerUnit = 100;
+        
+        Vector3 localPos = new Vector3(
+            (pos.x - ImageManager.ImageWidth/2f) / (float)pixelsPerUnit,
+            (pos.y - ImageManager.ImageHeight/2f) / (float)pixelsPerUnit,
+            0f
+        );
+        
+        localPos.z = -10f;
+        CameraMover.MoveToPosition(localPos);
     }
     
     private List<Vector2Int> Bresenham(Vector2 startPoint, Vector2 endPoint)
@@ -323,6 +351,13 @@ public class PlayerHand : MonoBehaviour
     private int GetIndex(int x, int y)
     {
         return x + y * ImageManager.ImageWidth;
+    }
+
+    private Vector2Int GetPixelPositionByIndex(int i)
+    {
+        return new Vector2Int(
+            i%ImageManager.ImageWidth, //x
+            i/ImageManager.ImageWidth);//y
     }
     
     private void OnDestroy()
