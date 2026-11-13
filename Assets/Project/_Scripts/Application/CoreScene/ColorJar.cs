@@ -4,6 +4,8 @@ using UnityEngine.UI;
 
 public class ColorJar : MonoBehaviour
 {
+    public Color8 color;
+    
     public Button Button;
     public Image ColorImage;
     public float StartCount;

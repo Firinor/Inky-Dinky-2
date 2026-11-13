@@ -118,11 +118,11 @@ public class PlayerHand : MonoBehaviour
         jar.Button.onClick.RemoveAllListeners();
         jar.Button.onClick.AddListener(() => RemoveColorFromBrush(jar));
 
-        Color32 colorID = jar.ColorImage.color;
+        Color8 colorID = jar.color;
         for (int i = 0; i < mainPixels.Length; i++)
         {
-            if (mainPixels[i].IsEqualTo(colorID)
-                && !IsSolvedPixel[i])
+            if (!IsSolvedPixel[i]
+                && colorID.IsEqualTo(mainPixels[i]))
                 HighlightPixels[i] = new Color32(255, 255, 255, 255);
         }
         brush.Add(jar);
@@ -144,10 +144,10 @@ public class PlayerHand : MonoBehaviour
             Destroy(jar.gameObject);
         }
         
-        Color32 colorID = jar.ColorImage.color;
+        Color8 colorID = jar.color;
         for (int i = 0; i < mainPixels.Length; i++)
         {
-            if (mainPixels[i].IsEqualTo(colorID))
+            if (colorID.IsEqualTo(mainPixels[i]))
             {
                 HighlightPixels[i] = new Color32(0, 0, 0, 0);
             }
@@ -193,7 +193,7 @@ public class PlayerHand : MonoBehaviour
 
         foreach (ColorJar colorJar in brush)
         {
-            Color32 jarColor = colorJar.ColorImage.color;
+            Color8 jarColor = colorJar.color;
             if (jarColor.IsEqualTo(color))
             {
                 colorJar.Count--;

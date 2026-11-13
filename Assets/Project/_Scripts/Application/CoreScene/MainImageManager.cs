@@ -83,23 +83,26 @@ public class MainImageManager : MonoBehaviour
 
         colorBars = new List<ColorJar>();
         
-        Dictionary<Color32, int> counts = pixels
+        Dictionary<Color8, int> counts = pixels
             .GroupBy(c =>
             {
-                Color32 c32 = c;
-                c32.a = c.a < .5f ? (byte)0 : (byte)255;
-                return c32;
+                Color8 c8 = new(c)
+                {
+                    a = c.a < .5f ? byte.MinValue : byte.MaxValue
+                };
+                return c8;
             })
             .ToDictionary(g => g.Key, g => g.Count());
             
         foreach (var i in counts)
         {
-            if(i.Key.a < 1)
+            if(i.Key.a < .5f)
                 continue;
             
             ColorJar newColorJar = Instantiate(ColorJarPrefab, ColorJarParent);
-            newColorJar.ColorImage.color = i.Key;
-            newColorJar.SliderImage.color = i.Key;
+            newColorJar.color = i.Key;
+            newColorJar.ColorImage.color = i.Key.GetColor();
+            newColorJar.SliderImage.color = i.Key.GetColor();
             newColorJar.TextCount.text = i.Value.ToString();
             newColorJar.Count = i.Value;
             newColorJar.StartCount = i.Value;
