@@ -7,7 +7,7 @@ public class PlayerHand : MonoBehaviour
 {
     public MainImageManager ImageManager;
     public CameraMover CameraMover;
-    public Color32[] mainPixels;
+    public Color[] mainPixels;
     public Transform[] BrushColorPoints;
     public PlayerInputHolder PlayerInput;
     public Camera mainCamera;
@@ -35,6 +35,9 @@ public class PlayerHand : MonoBehaviour
 
     private bool isDirty;
     private bool isHighlight;
+
+    private const float HalfAlfa = 0.5f;
+    private const byte HalfAlfa32 = 127;
     
     public void Initialize()
     {
@@ -97,13 +100,13 @@ public class PlayerHand : MonoBehaviour
         {
             filterMode = FilterMode.Point
         };
+        mainPixels = ImageManager.mainPixels;
         InGameSolvedPixels = new Color32[ImageManager.ImageLength];
         for (int i = 0; i < InGameSolvedPixels.Length; i++)
         {
             InGameSolvedPixels[i] = new Color32();
         }
         IsSolvedPixel = new bool[InGameSolvedPixels.Length];
-        mainPixels = ImageManager.mainPixels;
         isDirty = true;
     }
     
@@ -118,11 +121,12 @@ public class PlayerHand : MonoBehaviour
         jar.Button.onClick.RemoveAllListeners();
         jar.Button.onClick.AddListener(() => RemoveColorFromBrush(jar));
 
-        Color8 colorID = jar.color;
+        Color32 colorCode = jar.codeColor;
         for (int i = 0; i < mainPixels.Length; i++)
         {
-            if (!IsSolvedPixel[i]
-                && colorID.IsEqualTo(mainPixels[i]))
+            if (mainPixels[i].a >= HalfAlfa
+                && !IsSolvedPixel[i]
+                && mainPixels[i].IsEqualColorCode(colorCode))
                 HighlightPixels[i] = new Color32(255, 255, 255, 255);
         }
         brush.Add(jar);
@@ -144,10 +148,10 @@ public class PlayerHand : MonoBehaviour
             Destroy(jar.gameObject);
         }
         
-        Color8 colorID = jar.color;
+        Color32 colorCode = jar.codeColor;
         for (int i = 0; i < mainPixels.Length; i++)
         {
-            if (colorID.IsEqualTo(mainPixels[i]))
+            if (mainPixels[i].IsEqualColorCode(colorCode))
             {
                 HighlightPixels[i] = new Color32(0, 0, 0, 0);
             }
@@ -186,15 +190,15 @@ public class PlayerHand : MonoBehaviour
         IsPainting = true;
     }
 
-    private bool IsColorInBrush(Color32 color)
+    private bool IsColorInBrush(Color color)
     {
         if(brush.Count <= 0)
             return false;
 
         foreach (ColorJar colorJar in brush)
         {
-            Color8 jarColor = colorJar.color;
-            if (jarColor.IsEqualTo(color))
+            Color32 colorCode = colorJar.codeColor;
+            if (color.IsEqualColorCode(colorCode))
             {
                 colorJar.Count--;
                 colorJar.TextCount.text = colorJar.Count.ToString();
@@ -245,7 +249,7 @@ public class PlayerHand : MonoBehaviour
                 continue;
             
             int index = GetIndex(pixel.x, pixel.y);
-            if(mainPixels[index].a <= 0)
+            if(mainPixels[index].a < HalfAlfa)
                 continue;
             if(IsSolvedPixel[index])
                 continue;
@@ -285,6 +289,7 @@ public class PlayerHand : MonoBehaviour
         );
         
         localPos.z = -10f;
+        //Debug.Log("CameraMover.MoveToPosition: " + pos);
         CameraMover.MoveToPosition(localPos);
     }
     

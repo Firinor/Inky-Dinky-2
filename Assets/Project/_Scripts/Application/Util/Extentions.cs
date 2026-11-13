@@ -54,8 +54,38 @@ public static class Extentions
         return false;
     }
     
-    public static bool IsEqualTo(this Color32 a, Color32 b)
+    public static bool IsEqualColorCode(this Color color, Color32 code)
     {
-        return a.r == b.r && a.g == b.g && a.b == b.b;
+        return color.a.Equals(1) && (int)(color.r * 8) == code.r && (int)(color.g * 8) == code.g && (int)(color.b * 8) == code.b;
+    }
+    
+    public static Color ToBrightColor(this Color32 a)
+    {
+        Color result = new Color();
+        float center = 1 / 16f;
+        result.r = a.r / 8f + center;
+        if (result.r >= 1) result.r = 1;
+        result.g = a.g / 8f + center;
+        if (result.g >= 1) result.g = 1;
+        result.b = a.b / 8f + center;
+        if (result.b >= 1) result.b = 1;
+        result.a = 1;
+        return result;
+    }
+    public static Color32 FromColorCode(this Color32 a)
+    {
+        Color32 result = new Color32();
+        byte center = 16;
+        int value = a.r * 32 + center;
+        if (value >= 255) value = 255;
+        result.r = (byte)(value);
+        value = a.g * 32 + center;
+        if (value >= 255) value = 255;
+        result.g = (byte)(value);
+        value = a.b * 32 + center;
+        if (value >= 255) value = 255;
+        result.b = (byte)(value);
+        result.a = byte.MaxValue;
+        return result;
     }
 }

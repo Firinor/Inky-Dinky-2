@@ -23,7 +23,7 @@ public class MainImageManager : MonoBehaviour
     
     public List<ColorJar> colorBars;
 
-    public Color32[] mainPixels;
+    public Color[] mainPixels;
 
     public void Initialize()
     {
@@ -39,22 +39,26 @@ public class MainImageManager : MonoBehaviour
         ImageHeight = source.height;
         InGameTexture2D = new Texture2D(ImageWidth, ImageHeight, TextureFormat.RGBA32, false)
         {
-            filterMode = FilterMode.Point
+            filterMode = FilterMode.Point,
+            
         };
-        mainPixels = source.GetPixels32();
+        mainPixels = source.GetPixels();
         
         var playerProgressPixels = new Color32[mainPixels.Length];
         for (int i = 0; i < playerProgressPixels.Length; i++)
         {
             Color c = mainPixels[i];
-            if(c.a < .5f)
+            if (c.a < 1)
+            {
+                mainPixels[i] = new Color();
                 continue;
+            }
             
             float gray = c.r * 0.2126f + c.g * 0.7152f + c.b * 0.0722f;
             float contrast = .2f;
             gray = (gray - 0.5f) * contrast + 0.5f;
             
-            playerProgressPixels[i] = new Color(gray, gray, gray, c.a);
+            playerProgressPixels[i] = new Color(gray, gray, gray, 1);
         }
 
         InGameTexture2D.SetPixels32(playerProgressPixels);
@@ -63,10 +67,12 @@ public class MainImageManager : MonoBehaviour
         
         int pixelsPerUnit = 100;
         return Sprite.Create(
-            InGameTexture2D,
-            new Rect(0, 0, source.width, source.height),
-            new Vector2(0.5f, 0.5f),
-            pixelsPerUnit);
+            texture: InGameTexture2D,
+            rect: new Rect(0, 0, source.width, source.height),
+            pivot: new Vector2(0.5f, 0.5f),
+            pixelsPerUnit: pixelsPerUnit, 
+            extrude: 0, 
+            meshType: SpriteMeshType.FullRect);
     }
     
     private void GenerateColorSequence()
@@ -83,14 +89,17 @@ public class MainImageManager : MonoBehaviour
 
         colorBars = new List<ColorJar>();
         
-        Dictionary<Color8, int> counts = pixels
+        Dictionary<Color32, int> counts = pixels
             .GroupBy(c =>
             {
-                Color8 c8 = new(c)
+                Color32 c32 = new()
                 {
-                    a = c.a < .5f ? byte.MinValue : byte.MaxValue
+                    r = (byte)(c.r * 8),
+                    g = (byte)(c.g * 8),
+                    b = (byte)(c.b * 8),
+                    a = c.a < 1f ? byte.MinValue : byte.MaxValue
                 };
-                return c8;
+                return c32;
             })
             .ToDictionary(g => g.Key, g => g.Count());
             
@@ -100,9 +109,9 @@ public class MainImageManager : MonoBehaviour
                 continue;
             
             ColorJar newColorJar = Instantiate(ColorJarPrefab, ColorJarParent);
-            newColorJar.color = i.Key;
-            newColorJar.ColorImage.color = i.Key.GetColor();
-            newColorJar.SliderImage.color = i.Key.GetColor();
+            newColorJar.codeColor = i.Key;
+            newColorJar.ColorImage.color = i.Key.ToBrightColor();
+            newColorJar.SliderImage.color = i.Key.ToBrightColor();
             newColorJar.TextCount.text = i.Value.ToString();
             newColorJar.Count = i.Value;
             newColorJar.StartCount = i.Value;
