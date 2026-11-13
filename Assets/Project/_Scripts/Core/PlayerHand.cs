@@ -9,6 +9,7 @@ public class PlayerHand : MonoBehaviour
     public CameraMover CameraMover;
     public Color[] mainPixels;
     public Transform[] BrushColorPoints;
+    public Transform[] FairyColorPoints;
     public PlayerInputHolder PlayerInput;
     public Camera mainCamera;
     public Material MainImageMaterial;
@@ -38,6 +39,11 @@ public class PlayerHand : MonoBehaviour
 
     private const float HalfAlfa = 0.5f;
     private const byte HalfAlfa32 = 127;
+    
+    //SPELLS
+    private bool IsWideBrush;
+    private bool IsFillTool;
+    private bool IsPippet;
     
     public void Initialize()
     {
