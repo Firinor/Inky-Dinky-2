@@ -123,4 +123,9 @@ public class MainImageManager : MonoBehaviour
         
         //colorBars.Shuffle();
     }
+
+    public ColorJar GetColorJarByColorCode(Color color)
+    {
+        return colorBars.FirstOrDefault(j => color.IsEqualColorCode(j.codeColor));
+    }
 }

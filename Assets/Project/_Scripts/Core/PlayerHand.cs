@@ -21,6 +21,7 @@ public class PlayerHand : MonoBehaviour
 
     public Image SpellWideBrushImage;
     public Image SpellFillToolImage;
+    public Image SpellPippetImage;
     
     public bool IsPainting { get; private set; }
     
@@ -71,11 +72,15 @@ public class PlayerHand : MonoBehaviour
         IsWideBrush = !IsWideBrush;
         SpellWideBrushImage.color = IsWideBrush ?  Color.aquamarine : Color.white;
     }
-    
     public void SwitchFillTool()
     {
         IsFillTool = !IsFillTool;
         SpellFillToolImage.color = IsFillTool ?  Color.aquamarine : Color.white;
+    }
+    public void SwitchPippet()
+    {
+        IsPippet = !IsPippet;
+        SpellPippetImage.color = IsPippet ?  Color.aquamarine : Color.white;
     }
     
     private void ShowCellOnZoom(float deltaZoom)
@@ -195,6 +200,29 @@ public class PlayerHand : MonoBehaviour
         
         Vector2Int pixelPos = new Vector2Int((int)localPos.x, (int)localPos.y);
 
+        if (IsPippet)
+        {
+            SwitchPippet();
+            int i = GetIndex(pixelPos.x, pixelPos.y);
+            Color32 pixelColor = ImageManager.mainPixels[i];
+
+            if(pixelColor.a <= 0)
+                return;
+            if(IsSolvedPixel[i])
+                return;
+            if(HighlightPixels[i].a > HalfAlfa32)
+                return;
+
+            Color targetColor = mainPixels[i];
+            Transform emptyPoint = BrushColorPoints.FirstOrDefault(p => p.childCount == 0);
+            if (emptyPoint is null)
+                RemoveColorFromBrush(brush[0]);
+
+            ColorJar targetColorJar = ImageManager.GetColorJarByColorCode(targetColor);
+            TryAddColorToBrush(targetColorJar);
+            return;
+        }
+        
         List<Vector2Int> indexes = new List<Vector2Int>{ pixelPos };
         if (IsFillTool)
         {
@@ -312,8 +340,8 @@ public class PlayerHand : MonoBehaviour
             queue.Enqueue(startPoint);
             visited[startPoint.x, startPoint.y] = true;
         
-            int[] dx = { -1, 1, 0, 0 };
-            int[] dy = {  0, 0, -1, 1 };
+            int[] stepX = { -1, 1, 0, 0 };
+            int[] stepY = {  0, 0, -1, 1 };
     
             while (queue.Count > 0)
             {
@@ -322,67 +350,28 @@ public class PlayerHand : MonoBehaviour
         
                 for (int i = 0; i < 4; i++)
                 {
-                    int nx = current.x + dx[i];
-                    int ny = current.y + dy[i];
+                    int currentX = current.x + stepX[i];
+                    int currentY = current.y + stepY[i];
             
-                    if (nx < 0 || nx >= ImageManager.ImageWidth || ny < 0 || ny >= ImageManager.ImageHeight) 
+                    if (currentX < 0 
+                        || currentX >= ImageManager.ImageWidth 
+                        || currentY < 0 
+                        || currentY >= ImageManager.ImageHeight) 
                         continue;
-                    if (visited[nx, ny]) 
+                    if (visited[currentX, currentY]) 
                         continue;
-                    index = GetIndex(nx, ny);
+                    index = GetIndex(currentX, currentY);
                     if (HighlightPixels[index].a < HalfAlfa32) 
                         continue;
             
-                    visited[nx, ny] = true;
-                    queue.Enqueue(new Vector2Int(nx, ny));
+                    visited[currentX, currentY] = true;
+                    queue.Enqueue(new Vector2Int(currentX, currentY));
                 }
             }
         }
         
         return result;
     }
-    
-    
-    public List<(int x, int y)> GetFloodFill(int x1, int y1, int[,] field, int width, int height)
-    {
-        int targetColor = field[y1, x1];
-        var result = new List<(int x, int y)>();
-    
-        if (targetColor == 0) return result;
-    
-        var visited = new bool[height, width];
-        var queue = new Queue<(int x, int y)>();
-        queue.Enqueue((x1, y1));
-        visited[y1, x1] = true;
-        
-        int[] dx = { -1, 1, 0, 0 };
-        int[] dy = {  0, 0, -1, 1 };
-    
-        while (queue.Count > 0)
-        {
-            var (cx, cy) = queue.Dequeue();
-            result.Add((cx, cy));
-        
-            for (int i = 0; i < 4; i++)
-            {
-                int nx = cx + dx[i];
-                int ny = cy + dy[i];
-            
-                if (nx < 0 || nx >= width || ny < 0 || ny >= height) continue;
-                if (visited[ny, nx]) continue;
-                if (field[ny, nx] != targetColor) continue;
-            
-                visited[ny, nx] = true;
-                queue.Enqueue((nx, ny));
-            }
-        }
-    
-        return result;
-    }
-    
-    
-    
-    
     private List<Vector2Int> AddNeighborsWideBrush(List<Vector2Int> line)
     {
         HashSet<Vector2Int> result = new();
