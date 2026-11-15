@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerHand : MonoBehaviour
 {
@@ -17,6 +18,9 @@ public class PlayerHand : MonoBehaviour
 
     public float BigCellZoom;
     public float MiniCellZoom;
+
+    public Image SpellWideBrushImage;
+    public Image SpellFillToolImage;
     
     public bool IsPainting { get; private set; }
     
@@ -62,6 +66,18 @@ public class PlayerHand : MonoBehaviour
         PlayerInput.onZoom += ShowCellOnZoom;
     }
 
+    public void SwitchWideBrush()
+    {
+        IsWideBrush = !IsWideBrush;
+        SpellWideBrushImage.color = IsWideBrush ?  Color.aquamarine : Color.white;
+    }
+    
+    public void SwitchFillTool()
+    {
+        IsFillTool = !IsFillTool;
+        SpellFillToolImage.color = IsFillTool ?  Color.aquamarine : Color.white;
+    }
+    
     private void ShowCellOnZoom(float deltaZoom)
     {
         float cameraSize = mainCamera.orthographicSize;
@@ -178,24 +194,37 @@ public class PlayerHand : MonoBehaviour
             return;
         
         Vector2Int pixelPos = new Vector2Int((int)localPos.x, (int)localPos.y);
-        int index = GetIndex(pixelPos.x, pixelPos.y);
-        Color32 pixelColor = ImageManager.mainPixels[index];
 
-        if(pixelColor.a <= 0)
-            return;
-        if(IsSolvedPixel[index])
-            return;
-        if (!IsColorInBrush(mainPixels[index]))
-            return;
+        List<Vector2Int> indexes = new List<Vector2Int>{ pixelPos };
+        if (IsFillTool)
+        {
+            indexes = AddAllNeighborsFill(pixelPos);
+        }
+        else if (IsWideBrush)
+        {
+            indexes = AddNeighborsWideBrush(indexes);
+        }
         
-        InGameSolvedPixels[index] = pixelColor;
-        HighlightPixels[index] = new Color32();
-        IsSolvedPixel[index] = true;
-        isHighlight = true;
-        isDirty = true;
-        IsPainting = true;
-    }
+        foreach (var pixel in indexes)
+        {
+            int i = GetIndex(pixel.x, pixel.y);
+            Color32 pixelColor = ImageManager.mainPixels[i];
 
+            if(pixelColor.a <= 0)
+                continue;
+            if(IsSolvedPixel[i])
+                continue;
+            if (!IsColorInBrush(mainPixels[i]))
+                continue;
+            
+            InGameSolvedPixels[i] = pixelColor;
+            HighlightPixels[i] = new Color32();
+            IsSolvedPixel[i] = true;
+            isHighlight = true;
+            isDirty = true;
+            IsPainting = true;
+        }
+    }
     private bool IsColorInBrush(Color color)
     {
         if(brush.Count <= 0)
@@ -217,7 +246,6 @@ public class PlayerHand : MonoBehaviour
 
         return false;
     }
-
     private Vector2Int GetPixelPosition(Vector2 pos)
     {
         Vector2 worldMousePosition = Camera.main!.ScreenToWorldPoint(pos);
@@ -226,7 +254,6 @@ public class PlayerHand : MonoBehaviour
         localPos += MainSprite.pivot;
         return new Vector2Int((int)localPos.x, (int)localPos.y);
     }
-    
     private void FindPixelsLine(Vector2 obj)
     {
         if(brush.Count <= 0)
@@ -244,6 +271,10 @@ public class PlayerHand : MonoBehaviour
         //Debug.Log("new lastMousePosition " + lastMousePosition);
         //Debug.Log("Start " +  startPixel + " end " + endPixel);
         List<Vector2Int> line = Bresenham(startPixel, endPixel);
+        if (IsWideBrush)
+        {
+            line = AddNeighborsWideBrush(line);
+        }
         foreach (var pixel in line)
         {
             //Debug.Log(pixel);
@@ -268,6 +299,110 @@ public class PlayerHand : MonoBehaviour
             isHighlight = true;
             isDirty = true;
         }
+    }
+    public List<Vector2Int> AddAllNeighborsFill(Vector2Int startPoint)
+    {
+        List<Vector2Int> result = new();
+
+        int index = GetIndex(startPoint.x, startPoint.y);
+        if (HighlightPixels[index].a >= HalfAlfa32)
+        {
+            var visited = new bool[ImageManager.ImageWidth, ImageManager.ImageHeight];
+            var queue = new Queue<Vector2Int>();
+            queue.Enqueue(startPoint);
+            visited[startPoint.x, startPoint.y] = true;
+        
+            int[] dx = { -1, 1, 0, 0 };
+            int[] dy = {  0, 0, -1, 1 };
+    
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                result.Add(current);
+        
+                for (int i = 0; i < 4; i++)
+                {
+                    int nx = current.x + dx[i];
+                    int ny = current.y + dy[i];
+            
+                    if (nx < 0 || nx >= ImageManager.ImageWidth || ny < 0 || ny >= ImageManager.ImageHeight) 
+                        continue;
+                    if (visited[nx, ny]) 
+                        continue;
+                    index = GetIndex(nx, ny);
+                    if (HighlightPixels[index].a < HalfAlfa32) 
+                        continue;
+            
+                    visited[nx, ny] = true;
+                    queue.Enqueue(new Vector2Int(nx, ny));
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    
+    public List<(int x, int y)> GetFloodFill(int x1, int y1, int[,] field, int width, int height)
+    {
+        int targetColor = field[y1, x1];
+        var result = new List<(int x, int y)>();
+    
+        if (targetColor == 0) return result;
+    
+        var visited = new bool[height, width];
+        var queue = new Queue<(int x, int y)>();
+        queue.Enqueue((x1, y1));
+        visited[y1, x1] = true;
+        
+        int[] dx = { -1, 1, 0, 0 };
+        int[] dy = {  0, 0, -1, 1 };
+    
+        while (queue.Count > 0)
+        {
+            var (cx, cy) = queue.Dequeue();
+            result.Add((cx, cy));
+        
+            for (int i = 0; i < 4; i++)
+            {
+                int nx = cx + dx[i];
+                int ny = cy + dy[i];
+            
+                if (nx < 0 || nx >= width || ny < 0 || ny >= height) continue;
+                if (visited[ny, nx]) continue;
+                if (field[ny, nx] != targetColor) continue;
+            
+                visited[ny, nx] = true;
+                queue.Enqueue((nx, ny));
+            }
+        }
+    
+        return result;
+    }
+    
+    
+    
+    
+    private List<Vector2Int> AddNeighborsWideBrush(List<Vector2Int> line)
+    {
+        HashSet<Vector2Int> result = new();
+        foreach (var point in line)
+        {
+            result.Add(point);
+            //left
+            if (point.x - 1 >= 0)
+                result.Add(new Vector2Int(point.x - 1, point.y));
+            //right
+            if (point.x + 1 < ImageManager.ImageWidth)       
+                result.Add(new Vector2Int(point.x + 1, point.y));
+            //up
+            if (point.y - 1 >= 0)          
+                result.Add(new Vector2Int(point.x, point.y - 1));
+            //down
+            if (point.y + 1 < ImageManager.ImageHeight)      
+                result.Add(new Vector2Int(point.x, point.y + 1));
+        }
+        return result.ToList();
     }
 
     public void MoveCameraToOpenPixel()
