@@ -128,4 +128,14 @@ public class MainImageManager : MonoBehaviour
     {
         return colorBars.FirstOrDefault(j => color.IsEqualColorCode(j.codeColor));
     }
+
+    public ColorJar GetAnyColorJar()
+    {
+        return colorBars.FirstOrDefault(j => j is not null);
+    }
+
+    public void RemoveColorJar(ColorJar jar)
+    {
+        colorBars.Remove(jar);
+    }
 }

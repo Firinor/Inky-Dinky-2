@@ -22,6 +22,7 @@ public class PlayerHand : MonoBehaviour
     public Image SpellWideBrushImage;
     public Image SpellFillToolImage;
     public Image SpellPippetImage;
+    public Image SpellAutoImage;
     
     public bool IsPainting { get; private set; }
     
@@ -49,6 +50,7 @@ public class PlayerHand : MonoBehaviour
     private bool IsWideBrush;
     private bool IsFillTool;
     private bool IsPippet;
+    private bool IsAuto;
     
     public void Initialize()
     {
@@ -81,6 +83,11 @@ public class PlayerHand : MonoBehaviour
     {
         IsPippet = !IsPippet;
         SpellPippetImage.color = IsPippet ?  Color.aquamarine : Color.white;
+    }
+    public void SwitchAuto()
+    {
+        IsAuto = !IsAuto;
+        SpellAutoImage.color = IsAuto ?  Color.aquamarine : Color.white;
     }
     
     private void ShowCellOnZoom(float deltaZoom)
@@ -157,6 +164,7 @@ public class PlayerHand : MonoBehaviour
                 HighlightPixels[i] = new Color32(255, 255, 255, 255);
         }
         brush.Add(jar);
+        ImageManager.RemoveColorJar(jar);
         
         isHighlight = true;
         return true;
@@ -165,6 +173,7 @@ public class PlayerHand : MonoBehaviour
     {
         jar.Button.onClick.RemoveAllListeners();
         jar.Button.onClick.AddListener(() => TryAddColorToBrush(jar));
+        Color32 colorCode = jar.codeColor;
         if (jar.Count > 0)
         {
             jar.transform.SetParent(ImageManager.ColorJarParent);
@@ -172,10 +181,10 @@ public class PlayerHand : MonoBehaviour
         }
         else
         {
+            jar.transform.SetParent(null);
             Destroy(jar.gameObject);
         }
         
-        Color32 colorCode = jar.codeColor;
         for (int i = 0; i < mainPixels.Length; i++)
         {
             if (mainPixels[i].IsEqualColorCode(colorCode))
@@ -185,6 +194,11 @@ public class PlayerHand : MonoBehaviour
         }
         isHighlight = true;
         brush.Remove(jar);
+        if (IsAuto)
+        {
+            ColorJar candidat = ImageManager.GetAnyColorJar();
+            TryAddColorToBrush(candidat);
+        }
     }
     
     private void FindPixels(Vector2 pos)
