@@ -119,9 +119,10 @@ public class MainImageManager : MonoBehaviour
             newColorJar.Button.onClick.AddListener(() => PlayerHand.TryAddColorToBrush(newColorJar));
             newColorJar.Initialize();
             colorBars.Add(newColorJar);
+            
+            int randomIndex = Random.Range(0, ColorJarParent.childCount);
+            newColorJar.transform.SetSiblingIndex(randomIndex);
         }
-        
-        //colorBars.Shuffle();
     }
 
     public ColorJar GetColorJarByColorCode(Color color)
