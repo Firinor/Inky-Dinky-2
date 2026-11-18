@@ -50,7 +50,7 @@ public class PlayerHand : MonoBehaviour
     private bool IsWideBrush;
     private bool IsFillTool;
     private bool IsPippet;
-    private bool IsAuto;
+    public bool IsAuto;
     
     public void Initialize()
     {
@@ -153,7 +153,7 @@ public class PlayerHand : MonoBehaviour
         jar.transform.SetParent(emptyPoint);
         jar.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
         jar.Button.onClick.RemoveAllListeners();
-        jar.Button.onClick.AddListener(() => RemoveColorFromBrush(jar));
+        jar.Button.onClick.AddListener(() => RemoveColorFromBrush(jar, isHandMade: true));
 
         Color32 colorCode = jar.codeColor;
         for (int i = 0; i < mainPixels.Length; i++)
@@ -169,7 +169,7 @@ public class PlayerHand : MonoBehaviour
         isHighlight = true;
         return true;
     }
-    private void RemoveColorFromBrush(ColorJar jar)
+    private void RemoveColorFromBrush(ColorJar jar, bool isHandMade)
     {
         jar.Button.onClick.RemoveAllListeners();
         jar.Button.onClick.AddListener(() => TryAddColorToBrush(jar));
@@ -194,7 +194,7 @@ public class PlayerHand : MonoBehaviour
         }
         isHighlight = true;
         brush.Remove(jar);
-        if (IsAuto)
+        if (IsAuto && !isHandMade)
         {
             ColorJar candidat = ImageManager.GetAnyColorJar();
             TryAddColorToBrush(candidat);
@@ -230,7 +230,7 @@ public class PlayerHand : MonoBehaviour
             Color targetColor = mainPixels[i];
             Transform emptyPoint = BrushColorPoints.FirstOrDefault(p => p.childCount == 0);
             if (emptyPoint is null)
-                RemoveColorFromBrush(brush[0]);
+                RemoveColorFromBrush(brush[0], isHandMade: true);
 
             ColorJar targetColorJar = ImageManager.GetColorJarByColorCode(targetColor);
             TryAddColorToBrush(targetColorJar);
@@ -281,7 +281,7 @@ public class PlayerHand : MonoBehaviour
                 colorJar.TextCount.text = colorJar.Count.ToString();
                 colorJar.SliderImage.fillAmount = colorJar.Count/colorJar.StartCount;
                 if(colorJar.Count <= 0)
-                    RemoveColorFromBrush(colorJar);
+                    RemoveColorFromBrush(colorJar, isHandMade:false);
                 return true;
             }
         }
