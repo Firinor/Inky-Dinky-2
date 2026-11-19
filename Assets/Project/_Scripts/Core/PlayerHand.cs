@@ -10,7 +10,6 @@ public class PlayerHand : MonoBehaviour
     public CameraMover CameraMover;
     public Color[] mainPixels;
     public Transform[] BrushColorPoints;
-    public Transform[] FairyColorPoints;
     public PlayerInputHolder PlayerInput;
     public Camera mainCamera;
     public Material MainImageMaterial;
@@ -28,7 +27,7 @@ public class PlayerHand : MonoBehaviour
     
     private Color32[] HighlightPixels;
     private Color32[] InGameSolvedPixels;
-    private bool[] IsSolvedPixel;
+    public bool[] IsSolvedPixel;
     private Texture2D _inGameplayHighlight;
     private Texture2D InGameSolvedTexture2D;
     
@@ -497,12 +496,12 @@ public class PlayerHand : MonoBehaviour
         return pixels;
     }
 
-    private int GetIndex(int x, int y)
+    public int GetIndex(int x, int y)
     {
         return x + y * ImageManager.ImageWidth;
     }
 
-    private Vector2Int GetPixelPositionByIndex(int i)
+    public Vector2Int GetPixelPositionByIndex(int i)
     {
         return new Vector2Int(
             i%ImageManager.ImageWidth, //x

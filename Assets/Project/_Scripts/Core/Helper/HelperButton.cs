@@ -1,31 +1,37 @@
-using System;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class HelperAssistant : MonoBehaviour
+public class HelperButton : MonoBehaviour
 {
-    public Transform Owner;
-    public ColorJar jar;
-    public float correctColorDelay;
-    public float speed;
+    public Image AwatarImage;
+    public TextMeshProUGUI NameText;
+    public Button Button;
+    
     
     public MainImageManager ImageManager;
     public PlayerHand PlayerHand;
-    
-    private Color32 color32;
-    private Vector3 targetPosition;
-    private float timer;
+    public ColorJar jar;
+    public Transform ColorJarPoint;
+    public HelperAssistant HelperPen;
+
+    public void OnEnable()
+    {
+        GetNextColorJar();
+        HelperPen.gameObject.SetActive(true);
+    }
     
     public void GetNextColorJar()
     {
         jar = ImageManager.GetAnyColorJar();
         ImageManager.RemoveColorJar(jar);
         
-        jar.transform.SetParent(Owner);
+        jar.transform.SetParent(ColorJarPoint);
         jar.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
         jar.Button.onClick.RemoveAllListeners();
         jar.Button.onClick.AddListener(RemoveColorJar);
 
-        color32 = jar.codeColor;
+        HelperPen.color32 = jar.codeColor;
         gameObject.SetActive(true);
     }
 

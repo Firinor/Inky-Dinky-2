@@ -15,6 +15,8 @@ public class CoreBootstrap : MonoBehaviour
     [SerializeField] 
     private MainImageManager mainImage;
     [SerializeField] 
+    private HelperManager helperManager;
+    [SerializeField] 
     private PlayerHand playerHand;
     
     private SaveData player;
@@ -34,6 +36,7 @@ public class CoreBootstrap : MonoBehaviour
         cameraMover.Initialize();
         mainImage.Initialize();
         playerHand.Initialize();
+        helperManager.Initialize();
     }
 
     private void LoadPlayerData()
