@@ -17,8 +17,8 @@ public class HelperButton : MonoBehaviour
 
     public void OnEnable()
     {
-        GetNextColorJar();
-        HelperPen.gameObject.SetActive(true);
+        //GetNextColorJar();
+        //HelperPen.gameObject.SetActive(true);
     }
     
     public void GetNextColorJar()

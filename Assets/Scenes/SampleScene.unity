@@ -538,6 +538,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Helper2
       objectReference: {fileID: 0}
+    - target: {fileID: 2825556971316648812, guid: 39ffbee786b8a2d4fae1cd3a1e4f1f1d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3897,7 +3901,7 @@ MonoBehaviour:
   spells: {fileID: 0}
   cameraMover: {fileID: 9051236210518287507}
   mainImage: {fileID: 1465287098}
-  helperManager: {fileID: 0}
+  helperManager: {fileID: 960549086}
   playerHand: {fileID: 430180722}
 --- !u!1 &939414416
 GameObject:
@@ -6194,6 +6198,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Helper3
       objectReference: {fileID: 0}
+    - target: {fileID: 2825556971316648812, guid: 39ffbee786b8a2d4fae1cd3a1e4f1f1d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -7095,12 +7103,12 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: d1c7813a7e180d64284a61b93f09c777, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.34117648}
+  m_Sprite: {fileID: 21300000, guid: a6b62e75ae4234649bc2bf634a43deed, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 15.36, y: 20.48}
+  m_Size: {x: 8.6, y: 6.08}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -7175,6 +7183,10 @@ PrefabInstance:
     - target: {fileID: 2825556971316648812, guid: 39ffbee786b8a2d4fae1cd3a1e4f1f1d, type: 3}
       propertyPath: m_Name
       value: Helper4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2825556971316648812, guid: 39ffbee786b8a2d4fae1cd3a1e4f1f1d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7574,6 +7586,10 @@ PrefabInstance:
     - target: {fileID: 2825556971316648812, guid: 39ffbee786b8a2d4fae1cd3a1e4f1f1d, type: 3}
       propertyPath: m_Name
       value: Helper1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2825556971316648812, guid: 39ffbee786b8a2d4fae1cd3a1e4f1f1d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

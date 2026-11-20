@@ -61,6 +61,11 @@ public class PlayerHand : MonoBehaviour
         MainImageMaterial.SetTexture(SolvedTexID, InGameSolvedTexture2D);
         MainImageMaterial.SetFloat(MaxCellID, mainCamera.orthographicSize > BigCellZoom ? 0 : 1);
         MainImageMaterial.SetFloat(MinCellID, mainCamera.orthographicSize > MiniCellZoom ? 0 : 1);
+
+        foreach (Transform brushColorPoint in BrushColorPoints)
+        {
+            brushColorPoint.ClearAll(instant:true);
+        }
         
         PlayerInput.onStartClick += FindPixels;
         PlayerInput.onEndClick += ResetPainting;
