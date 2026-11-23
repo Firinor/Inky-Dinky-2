@@ -5,6 +5,7 @@ using UnityEngine;
 public class HelperManager : MonoBehaviour
 {
     public GameObject ChooseAssistance;
+    public SpriteRenderer MainSprite;
 
     public HelperCandidatе[] Candidates;
 
@@ -15,7 +16,7 @@ public class HelperManager : MonoBehaviour
     
     public void Initialize()
     {
-        foreach (var helperButton in helpers)
+        foreach (HelperButton helperButton in helpers)
         {
             helperButton.enabled = false;
             helperButton.AwatarImage.sprite = AddHelperIcon;
@@ -25,10 +26,13 @@ public class HelperManager : MonoBehaviour
             if(helperButton != helpers[0])
                 helperButton.gameObject.SetActive(false);
         }
+        HelperAssistant.StartImagePosition = MainSprite.sprite.bounds.min;
+        
         foreach (var Candidate in Candidates)
         {
             Candidate.Initialize();
         }
+        ChooseAssistance.SetActive(false);
     }
     
     private void WantAddHelper()
@@ -40,7 +44,7 @@ public class HelperManager : MonoBehaviour
     
     public void AddThisHelper(Sprite avatarSprite, string nameTextText, Sprite penSprite)
     {
-        HelperButton lastHelper = helpers.FirstOrDefault(h => h.AwatarImage.sprite = AddHelperIcon);
+        HelperButton lastHelper = helpers.FirstOrDefault(h => h.AwatarImage.sprite == AddHelperIcon);
         if(lastHelper is null)
             return;
         
@@ -50,6 +54,18 @@ public class HelperManager : MonoBehaviour
         lastHelper.Button.onClick.RemoveAllListeners();
         //lastHelper.Button.onClick.AddListener(WantFireHelper);
         lastHelper.enabled = true;
+
+        lastHelper.DoEnableAssistant(penSprite);
+
+        HelperButton nextHelper = helpers.FirstOrDefault(h => !h.gameObject.activeSelf);
+        if(nextHelper is null)
+            return;
         
+        nextHelper.gameObject.SetActive(true);
+        nextHelper.enabled = true;
+        nextHelper.AwatarImage.sprite = AddHelperIcon;
+        nextHelper.NameText.gameObject.SetActive(false);
+        nextHelper.Button.onClick.RemoveAllListeners();
+        nextHelper.Button.onClick.AddListener(WantAddHelper);
     }
 }

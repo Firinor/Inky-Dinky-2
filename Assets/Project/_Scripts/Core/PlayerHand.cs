@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -204,6 +205,21 @@ public class PlayerHand : MonoBehaviour
             TryAddColorToBrush(candidat);
         }
     }
+
+    public List<Vector2Int> GetPixelsMap(Color32 colorCode, int size = 4)
+    {
+        List<Vector2Int> result = new(size);
+
+        for (int i = 0; i < mainPixels.Length; i++)
+        {
+            if (mainPixels[i].a >= HalfAlfa
+                && !IsSolvedPixel[i]
+                && mainPixels[i].IsEqualColorCode(colorCode))
+                result.Add(GetPixelPositionByIndex(i));
+        }
+        
+        return result;
+    }
     
     private void FindPixels(Vector2 pos)
     {
@@ -271,6 +287,23 @@ public class PlayerHand : MonoBehaviour
             IsPainting = true;
         }
     }
+
+    public void SolvePixel(Vector3 pixel)
+    {
+        Vector2Int pixelPosition = GetPixelPosition(pixel);
+        int index = GetIndex(pixelPosition.x, pixelPosition.y);
+        Color32 pixelColor = ImageManager.mainPixels[index];
+
+        if(pixelColor.a <= 0)
+            throw new Exception();
+        if(IsSolvedPixel[index])
+            throw new Exception();
+            
+        InGameSolvedPixels[index] = pixelColor;
+        IsSolvedPixel[index] = true;
+        isDirty = true;
+    }
+    
     private bool IsColorInBrush(Color color)
     {
         if(brush.Count <= 0)
@@ -292,7 +325,7 @@ public class PlayerHand : MonoBehaviour
 
         return false;
     }
-    private Vector2Int GetPixelPosition(Vector2 pos)
+    public Vector2Int GetPixelPosition(Vector2 pos)
     {
         Vector2 worldMousePosition = Camera.main!.ScreenToWorldPoint(pos);
         Vector2 localPos = ImageManager.mainImage.transform.InverseTransformPoint(worldMousePosition);

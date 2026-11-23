@@ -8,20 +8,30 @@ public class HelperButton : MonoBehaviour
     public TextMeshProUGUI NameText;
     public Button Button;
     
-    
     public MainImageManager ImageManager;
     public PlayerHand PlayerHand;
     public ColorJar jar;
     public Transform ColorJarPoint;
     public HelperAssistant HelperPen;
 
-    public void OnEnable()
+    public void DoEnableAssistant(Sprite penSprite)
     {
-        //GetNextColorJar();
-        //HelperPen.gameObject.SetActive(true);
+        HelperPen.Avatar.sprite = AwatarImage.sprite;
+        HelperPen.Pen.sprite = penSprite;
+        HelperPen.OnColorDraw += pos =>
+        {
+            PlayerHand.SolvePixel(pos);
+            jar.Count--;
+            jar.TextCount.text = jar.Count.ToString();
+            jar.SliderImage.fillAmount = jar.Count/jar.StartCount;
+        };
+        
+        GetNextColorJar();
+        HelperPen.map = PlayerHand.GetPixelsMap(jar.codeColor, jar.Count);
+        HelperPen.gameObject.SetActive(true);
     }
     
-    public void GetNextColorJar()
+    private void GetNextColorJar()
     {
         jar = ImageManager.GetAnyColorJar();
         ImageManager.RemoveColorJar(jar);
