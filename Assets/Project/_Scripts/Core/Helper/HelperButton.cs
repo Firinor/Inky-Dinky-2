@@ -29,6 +29,8 @@ public class HelperButton : MonoBehaviour
         GetNextColorJar();
         HelperPen.map = PlayerHand.GetPixelsMap(jar.codeColor, jar.Count);
         HelperPen.gameObject.SetActive(true);
+        HelperPen.StartFindHumanaizedBot();
+        //HelperPen.StartFindNearestBot();
     }
     
     private void GetNextColorJar()
@@ -41,7 +43,7 @@ public class HelperButton : MonoBehaviour
         jar.Button.onClick.RemoveAllListeners();
         jar.Button.onClick.AddListener(RemoveColorJar);
 
-        HelperPen.color32 = jar.codeColor;
+        //HelperPen.color32 = jar.codeColor;
         gameObject.SetActive(true);
     }
 

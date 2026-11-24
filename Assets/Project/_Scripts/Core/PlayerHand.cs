@@ -288,10 +288,9 @@ public class PlayerHand : MonoBehaviour
         }
     }
 
-    public void SolvePixel(Vector3 pixel)
+    public void SolvePixel(Vector2Int pixel)
     {
-        Vector2Int pixelPosition = GetPixelPosition(pixel);
-        int index = GetIndex(pixelPosition.x, pixelPosition.y);
+        int index = GetIndex(pixel.x, pixel.y);
         Color32 pixelColor = ImageManager.mainPixels[index];
 
         if(pixelColor.a <= 0)

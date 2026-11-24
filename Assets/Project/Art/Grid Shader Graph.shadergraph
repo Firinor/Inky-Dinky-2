@@ -10,9 +10,6 @@
             "m_Id": "fc4cf93a3f514138a4f14d3e840cd7d8"
         },
         {
-            "m_Id": "d2b099b757fb43ea92c7955df010ad81"
-        },
-        {
             "m_Id": "e6cb1b87c94b4698bf3c4c149add0c8c"
         },
         {
@@ -2666,7 +2663,7 @@
     "m_Title": "Grid",
     "m_Position": {
         "x": -1717.9998779296875,
-        "y": 1001.0
+        "y": 1001.0001220703125
     }
 }
 
@@ -2684,9 +2681,6 @@
         },
         {
             "m_Id": "e6cb1b87c94b4698bf3c4c149add0c8c"
-        },
-        {
-            "m_Id": "d2b099b757fb43ea92c7955df010ad81"
         },
         {
             "m_Id": "fc4cf93a3f514138a4f14d3e840cd7d8"
@@ -2986,8 +2980,8 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -723.0001220703125,
-            "y": 705.0000610351563,
+            "x": -738.9999389648438,
+            "y": 704.9999389648438,
             "width": 186.0,
             "height": 142.0
         }
@@ -3606,7 +3600,7 @@
     "m_PerRendererData": false,
     "m_customAttributes": [],
     "m_Value": {
-        "m_SerializedTexture": "{\"texture\":{\"fileID\":2800000,\"guid\":\"aaddc30d12fcf904eac587ee1feabbee\",\"type\":3}}",
+        "m_SerializedTexture": "",
         "m_Guid": ""
     },
     "isMainTexture": false,
@@ -4345,7 +4339,7 @@
         "x"
     ],
     "m_Precision": 0,
-    "m_PreviewExpanded": true,
+    "m_PreviewExpanded": false,
     "m_DismissedVersion": 0,
     "m_PreviewMode": 0,
     "m_CustomColors": {
@@ -4996,7 +4990,7 @@
     "m_PerRendererData": false,
     "m_customAttributes": [],
     "m_Value": {
-        "m_SerializedTexture": "{\"texture\":{\"fileID\":2800000,\"guid\":\"a9fd8f6b461461f4a92eafc60921ee78\",\"type\":3}}",
+        "m_SerializedTexture": "",
         "m_Guid": ""
     },
     "isMainTexture": false,
@@ -6066,42 +6060,6 @@
 
 {
     "m_SGVersion": 0,
-    "m_Type": "UnityEditor.ShaderGraph.Internal.Texture2DShaderProperty",
-    "m_ObjectId": "d2b099b757fb43ea92c7955df010ad81",
-    "m_Guid": {
-        "m_GuidSerialized": "fd87b326-4ac5-46f6-ba8f-d03e4cbaaddc"
-    },
-    "promotedFromAssetID": "",
-    "promotedFromCategoryName": "",
-    "promotedOrdering": -1,
-    "m_Name": "GreyTex",
-    "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "GreyTex",
-    "m_DefaultReferenceName": "_GreyTex",
-    "m_OverrideReferenceName": "",
-    "m_GeneratePropertyBlock": true,
-    "m_UseCustomSlotLabel": false,
-    "m_CustomSlotLabel": "",
-    "m_DismissedVersion": 0,
-    "m_Precision": 0,
-    "overrideHLSLDeclaration": false,
-    "hlslDeclarationOverride": 0,
-    "m_Hidden": false,
-    "m_PerRendererData": false,
-    "m_customAttributes": [],
-    "m_Value": {
-        "m_SerializedTexture": "{\"texture\":{\"fileID\":2800000,\"guid\":\"7f0db3cf23c93fc4eac01cb3a52388ee\",\"type\":3}}",
-        "m_Guid": ""
-    },
-    "isMainTexture": false,
-    "useTilingAndOffset": false,
-    "useTexelSize": true,
-    "m_Modifiable": true,
-    "m_DefaultType": 0
-}
-
-{
-    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.PropertyNode",
     "m_ObjectId": "d49df0ea46ac487db0e714c0749832a1",
     "m_Group": {
@@ -6443,7 +6401,7 @@
     "m_PerRendererData": false,
     "m_customAttributes": [],
     "m_Value": {
-        "m_SerializedTexture": "{\"texture\":{\"fileID\":8400000,\"guid\":\"4d24706698c829a46a56d8fa7d7b21c2\",\"type\":2}}",
+        "m_SerializedTexture": "{\"texture\":{\"fileID\":2800000,\"guid\":\"29c31706a4df7f943a70c1185969ae4e\",\"type\":3}}",
         "m_Guid": ""
     },
     "isMainTexture": false,
@@ -6756,8 +6714,8 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -1064.0001220703125,
-            "y": 705.0000610351563,
+            "x": -1091.0,
+            "y": 704.9999389648438,
             "width": 208.00006103515626,
             "height": 278.0
         }

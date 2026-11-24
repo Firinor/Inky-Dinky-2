@@ -23,6 +23,9 @@ public class CoreBootstrap : MonoBehaviour
     
     private IEnumerator Start()
     {
+        //QualitySettings.vSyncCount = 0; 
+        //Application.targetFrameRate = 30; 
+        
         //closeСurtain.Initialize();
         
         yield return null;
